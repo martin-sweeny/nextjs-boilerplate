@@ -1,0 +1,32 @@
+{
+  "name": "nextjs-boilerplate",
+  "author": {
+    "email": "martin.sweeny@tuta.io",
+    "name": "Martin Sweeny"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "nodemon",
+    "build": "next build && tsc --project tsconfig.server.json",
+    "start": "cross-env NODE_ENV=production node dist/index.js"
+  },
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "next": "latest",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^2.0.4",
+    "@types/node": "^16.9.6",
+    "@types/react": "^17.0.24",
+    "@types/react-dom": "^17.0.9",
+    "asciify": "^1.3.5",
+    "chalk": "^4.1.2",
+    "chalk-cli": "^5.0.0",
+    "nodemon": "^2.0.12",
+    "prettier": "^2.4.1",
+    "ts-node": "^10.2.1",
+    "typescript": "~4.4.3"
+  }
+}

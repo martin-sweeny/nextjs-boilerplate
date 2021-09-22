@@ -1,0 +1,75 @@
+version: "3"
+name: nextjs
+
+proxy:
+  appserver:
+    - nextjs.lndo.site:3000
+
+services:
+  appserver:
+    type: node:14
+    ssl: true
+    scanner: false
+    build_as_root:
+      - npm i -g npm
+      - npm i -g pnpm
+    build:
+      - pnpm i
+    overrides:
+      image: node:current-slim
+
+tooling:
+  # Make the usual tools available
+  node:
+    service: appserver
+  pnpm:
+    service: appserver
+  pnpx:
+    service: appserver
+
+  # Gets rid of temp files
+  cleanup:
+    service: appserver
+    cmd:
+      - echo "\nCleaning up..."
+      - pnpx chalk gray "Removing ./{cache,node_modules,.pnpm-store,.next}"
+      - "rm -rf ./{cache,node_modules,.pnpm-store,.next}"
+      - echo "...done"
+      - pnpx asciify "clean!" -f "nancyj" | chalk green --stdin
+      - echo "Now's a good time to rebuild. Run:"
+      - pnpx chalk yellow "lando rebuild -y"
+      - echo "\n"
+
+  # Run the devserver, hardcoding port and host to ensure we can reach it while using lando
+  dev:
+    service: appserver
+    cmd:
+      - clear
+      - pnpx asciify "nice app" -f "nancyj" | pnpx chalk magenta --stdin
+      - npm run dev -- -H 0.0.0.0 -p 3000
+
+  # Lint the project
+  lint:
+    service: appserver
+    cmd:
+      - echo "\nUpdating dependencies to latest versions..."
+      - echo "\n"
+      - pnpx prettier pages --write
+      - pnpx prettier server --write
+      - pnpx asciify "looks good!" -f "nancyj" | chalk green --stdin
+      - echo "\n"
+
+  # Fetch the latest updates, then install them
+  update-deps:
+    service: appserver
+    cmd:
+      - echo "\nUpdating dependencies to latest versions..."
+      - echo "\n"
+      - pnpx chalk bold black bgGreen "Accept this:"
+      - pnpx npm-check-updates -u
+      - pnpm i
+      - echo "...done!"
+      - pnpx asciify "up to date!" -f "nancyj" | chalk green --stdin
+      - echo "Run the app with:"
+      - pnpx chalk yellow "lando develop"
+      - echo "\n"
